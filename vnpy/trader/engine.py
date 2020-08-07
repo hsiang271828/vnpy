@@ -42,6 +42,15 @@ from .object import (
 from .setting import SETTINGS
 from .utility import get_folder_path, TRADER_DIR
 
+#----------------------------------lixiang  20200731------------------------------------------
+import platform
+import shelve
+if platform.uname().system == "Windows":
+  LINK_SIGN = "\\"
+elif platform.uname().system == "Linux":
+  LINK_SIGN = "/"
+
+
 
 class MainEngine:
     """
@@ -332,6 +341,9 @@ class OmsEngine(BaseEngine):
     """
     Provides order management system function for VN Trader.
     """
+    #----------------------------------lixiang  20200731------------------------------------------
+    contract_file_name = 'contract_data'
+    contract_file_path = get_folder_path(contract_file_name)
 
     def __init__(self, main_engine: MainEngine, event_engine: EventEngine):
         """"""
@@ -349,6 +361,32 @@ class OmsEngine(BaseEngine):
         self.add_function()
         self.register_event()
 
+        #----------------------------------lixiang  20200731------------------------------------------
+        self.load_contracts()
+    #----------------------------------lixiang  20200731------------------------------------------
+    def load_contracts(self):
+        """读取合约数据"""
+        print("读取合约数据")
+        try:
+            with shelve.open(f"{self.contract_file_path}{LINK_SIGN}contract_data.vt",writeback=True) as file:
+                if 'data' in file:
+                    contract_data = file['data']
+                    for key, value in list(contract_data.items()):
+                        self.contracts[key] = value
+        except:
+            return {}
+        return self.contracts
+    #----------------------------------lixiang  20200731------------------------------------------
+    def save_contracts(self):
+        """
+        保存合约数据
+        """
+        try:
+            with shelve.open(f"{self.contract_file_path}{LINK_SIGN}contract_data.vt",writeback=True)  as file:
+                file['data'] = self.contracts 
+        except:
+            return
+
     def add_function(self) -> None:
         """Add query function to main engine."""
         self.main_engine.get_tick = self.get_tick
@@ -364,6 +402,13 @@ class OmsEngine(BaseEngine):
         self.main_engine.get_all_accounts = self.get_all_accounts
         self.main_engine.get_all_contracts = self.get_all_contracts
         self.main_engine.get_all_active_orders = self.get_all_active_orders
+
+        #----------------------------------lixiang  20200731------------------------------------------
+        """
+        为MainEngine添加OmsEngine函数
+        """
+        self.main_engine.save_contracts = self.save_contracts                   #保存合约参数到硬盘
+        self.main_engine.load_contracts = self.load_contracts                   #读取硬盘合约数据
 
     def register_event(self) -> None:
         """"""

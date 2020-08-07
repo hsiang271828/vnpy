@@ -854,6 +854,9 @@ class CtaEngine(BaseEngine):
         for strategy_name in self.strategies.keys():
             self.stop_strategy(strategy_name)
 
+        #保存合约数据到本地
+        self.main_engine.save_contracts()
+
     def load_strategy_setting(self):
         """
         Load setting file.
