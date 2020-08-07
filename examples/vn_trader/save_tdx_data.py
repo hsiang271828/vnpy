@@ -228,6 +228,8 @@ if __name__ == '__main__':
         pool.apply(save_tdx_data, setting)
     pool.close()
     pool.join()
+
+
     #保存股票列表
     if not future_download:
         stock_vt_symbols = load_json("stock_vt_symbols.json")
@@ -235,3 +237,5 @@ if __name__ == '__main__':
             if vt_symbol not in stock_vt_symbols:
                 stock_vt_symbols.append(vt_symbol)
         save_json("stock_vt_symbols.json",stock_vt_symbols)
+
+    print("程序运行结束...自动退出")
