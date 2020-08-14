@@ -159,7 +159,7 @@ if __name__ == '__main__':
     main_engine = MainEngine(event_engine)
     contracts = main_engine.load_contracts()
     if contracts:
-        print(len(contracts))
+        print("vnpy contracts: %d" % len(contracts))
 
     if not contracts:
         print("load_contracts = 0,return")
@@ -169,6 +169,8 @@ if __name__ == '__main__':
     vt_symbols = []             #  vt_symbol列表
     future_download = True      #  期货数据下载状态
     for dirpath, dirnames, filenames in os.walk(file_path):
+
+        print("通达信本地文件数量: %d" % len(filenames))
         for file_name in filenames:         #当前目录所有文件名
             b_found = False
             vt_symbol = ""
@@ -215,7 +217,7 @@ if __name__ == '__main__':
                     vt_symbols.append(vt_symbol)
                     pass
 
-
+    print("过滤处理后的合约文件数量: %d" % len(vt_symbols))
     pool = multiprocessing.Pool(multiprocessing.cpu_count(), maxtasksperchild=1)
     print("multiprocessing.cpu_count(): %d" % multiprocessing.cpu_count())
     for setting in list(zip(file_names,vt_symbols)):
